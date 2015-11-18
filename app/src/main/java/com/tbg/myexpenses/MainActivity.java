@@ -11,6 +11,8 @@ import android.view.MenuItem;
 
 import com.tbg.myexpenses.database.ExpensesDbHelper;
 import com.tbg.myexpenses.database.ItemsContainer;
+import com.tbg.myexpenses.fragments.ExpenseEditFragment;
+import com.tbg.myexpenses.fragments.ExpensesListViewFragment;
 
 public class MainActivity extends AppCompatActivity implements
     ExpensesListViewFragment.OnExpenseItemSelectedListener, ExpenseEditFragment.OnExpenseEditListener{

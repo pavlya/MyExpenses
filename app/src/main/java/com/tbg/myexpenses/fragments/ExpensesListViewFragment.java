@@ -1,4 +1,4 @@
-package com.tbg.myexpenses;
+package com.tbg.myexpenses.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -8,6 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import com.tbg.myexpenses.ExpensesArrayAdapter;
+import com.tbg.myexpenses.ExpensesItem;
+import com.tbg.myexpenses.R;
 import com.tbg.myexpenses.database.ItemsContainer;
 
 /**

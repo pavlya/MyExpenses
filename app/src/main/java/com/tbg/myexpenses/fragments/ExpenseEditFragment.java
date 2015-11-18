@@ -1,4 +1,4 @@
-package com.tbg.myexpenses;
+package com.tbg.myexpenses.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.tbg.myexpenses.ExpensesItem;
+import com.tbg.myexpenses.R;
 import com.tbg.myexpenses.database.ItemsContainer;
 
 public class ExpenseEditFragment extends Fragment implements View.OnClickListener{
@@ -35,7 +37,7 @@ public class ExpenseEditFragment extends Fragment implements View.OnClickListene
         public void onExpenseEdited(int itemNumber);
     }
 
-    final static String ARG_POSITION = "position";
+    public final static String ARG_POSITION = "position";
     int mCurrentPosition = -1;
     private OnExpenseEditListener expenseEditListener;
 
@@ -113,12 +115,13 @@ public class ExpenseEditFragment extends Fragment implements View.OnClickListene
 
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(
                 getContext(), android.R.layout.simple_spinner_item, ItemsContainer.categories);
-
-        ExpensesItem item = ItemsContainer.expensesItems.get(position);
-        etAmount.setText(item.getAmount() + "");
-        etDescription.setText(item.getExplanation());
-        spinnerCategory.setAdapter(spinnerAdapter);
-        mCurrentPosition = position;
+        if(position != -1) {
+            ExpensesItem item = ItemsContainer.expensesItems.get(position);
+            etAmount.setText(item.getAmount() + "");
+            etDescription.setText(item.getExplanation());
+            spinnerCategory.setAdapter(spinnerAdapter);
+            mCurrentPosition = position;
+        }
     }
 
     @Override
