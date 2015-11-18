@@ -37,6 +37,7 @@ public class ExpenseEditFragment extends Fragment implements View.OnClickListene
         public void onExpenseEdited(int itemNumber);
     }
 
+
     public final static String ARG_POSITION = "position";
     int mCurrentPosition = -1;
     private OnExpenseEditListener expenseEditListener;
