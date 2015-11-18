@@ -4,10 +4,18 @@ package com.tbg.myexpenses;
  * Created by Pavlya on 12/11/2015.
  */
 public class ExpensesItem {
-    private float amount;
+    private double amount;
     private long date;
     private String explanation;
     private int type;
+
+    public ExpensesItem(){}
+
+    public ExpensesItem(double amount, long date, String explanation) {
+        this.amount = amount;
+        this.date = date;
+        this.explanation = explanation;
+    }
 
     public ExpensesItem(float amount, long date, String explanation, int type) {
         this.amount = amount;
@@ -16,11 +24,11 @@ public class ExpensesItem {
         this.type = type;
     }
 
-    public float getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(float amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 
@@ -46,5 +54,15 @@ public class ExpensesItem {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    @Override
+    public String toString() {
+        return "ExpensesItem{" +
+                "amount=" + amount +
+                ", date=" + date +
+                ", explanation='" + explanation + '\'' +
+                ", type=" + type +
+                '}';
     }
 }
