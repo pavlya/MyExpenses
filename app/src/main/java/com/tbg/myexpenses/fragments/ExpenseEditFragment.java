@@ -11,9 +11,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-import com.tbg.myexpenses.ExpensesItem;
+import com.tbg.myexpenses.data.ExpensesItem;
 import com.tbg.myexpenses.R;
-import com.tbg.myexpenses.database.ItemsContainer;
+import com.tbg.myexpenses.data.ItemsContainer;
 
 public class ExpenseEditFragment extends Fragment implements View.OnClickListener{
 

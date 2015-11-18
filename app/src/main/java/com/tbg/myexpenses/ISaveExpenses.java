@@ -1,5 +1,7 @@
 package com.tbg.myexpenses;
 
+import com.tbg.myexpenses.data.ExpensesItem;
+
 import java.util.List;
 
 /**

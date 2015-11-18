@@ -7,7 +7,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import com.tbg.myexpenses.data.ExpensesItem;
+
 import java.util.Calendar;
 import java.util.List;
 

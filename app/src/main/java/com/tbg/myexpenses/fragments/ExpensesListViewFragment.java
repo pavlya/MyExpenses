@@ -9,9 +9,9 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.tbg.myexpenses.ExpensesArrayAdapter;
-import com.tbg.myexpenses.ExpensesItem;
+import com.tbg.myexpenses.data.ExpensesItem;
 import com.tbg.myexpenses.R;
-import com.tbg.myexpenses.database.ItemsContainer;
+import com.tbg.myexpenses.data.ItemsContainer;
 
 /**
  * A placeholder fragment containing a simple view.

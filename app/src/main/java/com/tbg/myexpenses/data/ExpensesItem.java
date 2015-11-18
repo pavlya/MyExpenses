@@ -1,13 +1,33 @@
-package com.tbg.myexpenses;
+package com.tbg.myexpenses.data;
 
 /**
  * Created by Pavlya on 12/11/2015.
  */
 public class ExpensesItem {
+
+    private int _id;
     private double amount;
     private long date;
+    private String title;
     private String explanation;
-    private int type;
+    private int category;
+
+    public int get_id() {
+        return _id;
+    }
+
+    public void set_id(int _id) {
+        this._id = _id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
 
     public ExpensesItem(){}
 
@@ -17,11 +37,11 @@ public class ExpensesItem {
         this.explanation = explanation;
     }
 
-    public ExpensesItem(float amount, long date, String explanation, int type) {
+    public ExpensesItem(float amount, long date, String explanation, int category) {
         this.amount = amount;
         this.date = date;
         this.explanation = explanation;
-        this.type = type;
+        this.category = category;
     }
 
     public double getAmount() {
@@ -48,21 +68,12 @@ public class ExpensesItem {
         this.explanation = explanation;
     }
 
-    public int getType() {
-        return type;
+    public int getCategory() {
+        return category;
     }
 
-    public void setType(int type) {
-        this.type = type;
+    public void setcategory(int category) {
+        this.category = category;
     }
 
-    @Override
-    public String toString() {
-        return "ExpensesItem{" +
-                "amount=" + amount +
-                ", date=" + date +
-                ", explanation='" + explanation + '\'' +
-                ", type=" + type +
-                '}';
-    }
 }

@@ -9,8 +9,9 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.tbg.myexpenses.database.ExpensesDbHelper;
-import com.tbg.myexpenses.database.ItemsContainer;
+import com.tbg.myexpenses.data.ExpensesDbHelper;
+import com.tbg.myexpenses.data.ExpensesItem;
+import com.tbg.myexpenses.data.ItemsContainer;
 import com.tbg.myexpenses.fragments.ExpenseEditFragment;
 import com.tbg.myexpenses.fragments.ExpensesListViewFragment;
 
