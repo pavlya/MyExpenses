@@ -1,14 +1,17 @@
 package com.tbg.myexpenses.fragments;
 
 import android.app.Activity;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.support.v4.widget.CursorAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.tbg.myexpenses.ExpensesArrayAdapter;
+import com.tbg.myexpenses.data.ExpensesDbHelper;
 import com.tbg.myexpenses.data.ExpensesItem;
 import com.tbg.myexpenses.R;
 import com.tbg.myexpenses.data.ItemsContainer;
@@ -19,12 +22,12 @@ import com.tbg.myexpenses.data.ItemsContainer;
 public class ExpensesListViewFragment extends ListFragment {
 
     public interface OnExpenseItemSelectedListener {
-        public void onExpenseItemSelected(int position);
+        public void onExpenseItemSelected(long id);
     }
 
     private OnExpenseItemSelectedListener itemSelectListener;
-    private ExpensesArrayAdapter expensesArrayAdapterAdapter;
-
+    private Cursor cursor;
+    private ExpensesCursorAdapter expensesCursorAdapter;
     public ExpensesListViewFragment() {
     }
 
@@ -32,20 +35,12 @@ public class ExpensesListViewFragment extends ListFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        expensesArrayAdapterAdapter = new ExpensesArrayAdapter(getContext(), ItemsContainer.expensesItems);
-        setListAdapter(expensesArrayAdapterAdapter);
+//        expensesArrayAdapterAdapter = new ExpensesArrayAdapter(getContext(), ItemsContainer.expensesItems);
+        cursor = ExpensesDbHelper.getInstance(getContext()).getAllItemsCursor();
+        expensesCursorAdapter = new ExpensesCursorAdapter(getContext(),cursor ,true);
+        setListAdapter(expensesCursorAdapter);
         return inflater.inflate(R.layout.fragment_expenses_list, container, false);
     }
-
-    public void addItemToArray(){
-        ItemsContainer.expensesItems.add(0, new ExpensesItem());
-        notifyAdapter();
-    }
-
-    public void notifyAdapter(){
-        expensesArrayAdapterAdapter.notifyDataSetChanged();
-    }
-
 
     public static boolean checkNullOrEmptyString(String string){
         return (string == null || string.length() <= 0);
@@ -59,6 +54,10 @@ public class ExpensesListViewFragment extends ListFragment {
         if(getFragmentManager().findFragmentById(R.id.fragment_container) != null){
             getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         }
+    }
+
+    public void notifyAdapter(){
+        expensesCursorAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -77,7 +76,8 @@ public class ExpensesListViewFragment extends ListFragment {
     public void onListItemClick(ListView l, View v, int position, long id) {
         // Notify the parent activity of selected item
         // TODO try to use id
-        itemSelectListener.onExpenseItemSelected(position);
+        Log.d("MY_TAG", "ExpensesListViewFragment.onListItemClick id: " + id);
+        itemSelectListener.onExpenseItemSelected(id);
 
         // Set the item as checked to be highlighted when in two-pane layout
         getListView().setItemChecked(position, true);

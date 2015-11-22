@@ -11,21 +11,22 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.tbg.myexpenses.data.ExpensesDbHelper;
 import com.tbg.myexpenses.data.ExpensesItem;
 import com.tbg.myexpenses.R;
-import com.tbg.myexpenses.data.ItemsContainer;
 
 public class ExpenseEditFragment extends Fragment implements View.OnClickListener{
 
     private EditText etAmount;
-    private EditText etDescription;
+    private EditText etTitle;
+    private EditText etExplanation;
     private Spinner spinnerCategory;
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btn_delete:
-                deletValueAndCloseActivity();
+                deleteValueAndCloseActivity();
                 return;
             case R.id.btn_submit:
                 saveValuesAndCloseActivity();
@@ -34,12 +35,12 @@ public class ExpenseEditFragment extends Fragment implements View.OnClickListene
     }
 
     public interface OnExpenseEditListener{
-        public void onExpenseEdited(int itemNumber);
+        public void onExpenseEdited();
     }
 
 
     public final static String ARG_POSITION = "position";
-    int mCurrentPosition = -1;
+    long mCurrentId = -1;
     private OnExpenseEditListener expenseEditListener;
 
     public ExpenseEditFragment() {
@@ -58,9 +59,9 @@ public class ExpenseEditFragment extends Fragment implements View.OnClickListene
         Bundle args = getArguments();
         if(args != null){
             // Edit Expense item, based on argument passed in
-            updateEditView(args.getInt(ARG_POSITION));
-        } else if (mCurrentPosition != -1){
-            updateEditView(mCurrentPosition);
+            updateEditView(args.getLong(ARG_POSITION));
+        } else if (mCurrentId != -1){
+            updateEditView(mCurrentId);
         }
     }
 
@@ -68,7 +69,7 @@ public class ExpenseEditFragment extends Fragment implements View.OnClickListene
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if(savedInstanceState != null){
-            mCurrentPosition = savedInstanceState.getInt(ARG_POSITION);
+            mCurrentId = savedInstanceState.getInt(ARG_POSITION);
         }
         // Inflate the layout for this fragment
         View parentView = inflater.inflate(R.layout.fragment_expense_edit, container, false);
@@ -80,21 +81,30 @@ public class ExpenseEditFragment extends Fragment implements View.OnClickListene
         return parentView;
     }
 
-    private void deletValueAndCloseActivity() {
-        if(mCurrentPosition >= 0) {
-            ItemsContainer.expensesItems.remove(mCurrentPosition);
+    private void deleteValueAndCloseActivity() {
+        if(mCurrentId >= 0) {
+//            ItemsContainer.expensesItems.remove(mCurrentPosition);
+            ExpensesDbHelper.getInstance(getContext()).deleteExpenseItem(mCurrentId);
         }
-        expenseEditListener.onExpenseEdited(mCurrentPosition);
+        expenseEditListener.onExpenseEdited();
     }
 
 
     private void saveValuesAndCloseActivity() {
         ExpensesItem item = new ExpensesItem();
         item.setAmount(Double.parseDouble(etAmount.getText().toString()));
-        item.setExplanation(etDescription.getText().toString());
+        item.setTitle(etTitle.getText().toString());
+        item.setExplanation(etExplanation.getText().toString());
+        item.setcategory(spinnerCategory.getSelectedItemPosition());
         item.setDate(System.currentTimeMillis());
-        ItemsContainer.expensesItems.set(mCurrentPosition, item);
-        expenseEditListener.onExpenseEdited(mCurrentPosition);
+
+        if(mCurrentId != -1) {
+            ExpensesDbHelper.getInstance(getContext()).updateExpenseItem(item, mCurrentId);
+        }
+        else {
+            ExpensesDbHelper.getInstance(getContext()).addExpenseItem(item);
+        }
+        expenseEditListener.onExpenseEdited();
     }
 
     @Override
@@ -109,19 +119,25 @@ public class ExpenseEditFragment extends Fragment implements View.OnClickListene
         }
     }
 
-    public void updateEditView(int position) {
+    public void updateEditView(long id) {
         etAmount = (EditText)getView().findViewById(R.id.et_amount);
-        etDescription = (EditText)getView().findViewById(R.id.et_description);
+        etTitle = (EditText)getView().findViewById(R.id.et_title);
+        etExplanation = (EditText)getView().findViewById(R.id.et_description);
         spinnerCategory = (Spinner)getView().findViewById(R.id.sp_category);
 
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(
-                getContext(), android.R.layout.simple_spinner_item, ItemsContainer.categories);
-        if(position != -1) {
-            ExpensesItem item = ItemsContainer.expensesItems.get(position);
+                getContext(), android.R.layout.simple_spinner_item,
+                getContext().getResources().getStringArray(R.array.categories));
+        spinnerCategory.setAdapter(spinnerAdapter);
+
+        if(id != -1) {
+            // get item using database id
+            ExpensesItem item = ExpensesDbHelper.getInstance(getContext()).getItem(id);
             etAmount.setText(item.getAmount() + "");
-            etDescription.setText(item.getExplanation());
-            spinnerCategory.setAdapter(spinnerAdapter);
-            mCurrentPosition = position;
+            etTitle.setText(item.getTitle());
+            etExplanation.setText(item.getExplanation());
+            spinnerCategory.setSelection(item.getCategory());
+            mCurrentId = id;
         }
     }
 
@@ -130,6 +146,6 @@ public class ExpenseEditFragment extends Fragment implements View.OnClickListene
         super.onSaveInstanceState(outState);
 
         // Save the current article selection in case we need to recreate the fragment
-        outState.putInt(ARG_POSITION, mCurrentPosition);
+        outState.putLong(ARG_POSITION, mCurrentId);
     }
 }

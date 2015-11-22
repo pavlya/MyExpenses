@@ -64,7 +64,7 @@ public class ExpensesDbHelper extends SQLiteOpenHelper{
         getWritableDatabase().insert(TABLE_EXPENSES, null, contentValues);
     }
 
-    public void updateExpenseItem(ExpensesItem item, int id){
+    public void updateExpenseItem(ExpensesItem item, long id){
         ContentValues contentValues = new ContentValues();
         contentValues.put(AMOUNT_VALUE, item.getAmount());
         contentValues.put(TITLE_VALUE, item.getTitle());
@@ -76,13 +76,13 @@ public class ExpensesDbHelper extends SQLiteOpenHelper{
         getWritableDatabase().update(TABLE_EXPENSES, contentValues,whereClause, whereArgs);
     }
 
-    public void deleteExpenseItem(int id){
+    public void deleteExpenseItem(long id){
         String whereClause = ID + " = ?";
         String [] whereArgs = {"" + id};
         getReadableDatabase().delete(TABLE_EXPENSES, whereClause, whereArgs);
     }
 
-    public ExpensesItem getItem(int id){
+    public ExpensesItem getItem(long id){
         ExpensesItem expensesItem = new ExpensesItem();
         String[] columns = {ID, AMOUNT_VALUE, TITLE_VALUE, DESCRIPTION_VALUE, DATE_VALUE, CATEGORY_VALUE};
         String selection = ID + " = ?";
@@ -119,5 +119,10 @@ public class ExpensesDbHelper extends SQLiteOpenHelper{
             } while (cursor.moveToNext());
         }
         return expensesItemList;
+    }
+
+    public Cursor getAllItemsCursor(){
+        Cursor cursor = getReadableDatabase().rawQuery("SELECT * FROM " + TABLE_EXPENSES, null);
+        return cursor;
     }
 }
