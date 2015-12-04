@@ -1,28 +1,36 @@
 package com.tbg.myexpenses;
 
-import android.graphics.Typeface;
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
+import android.view.inputmethod.InputMethodManager;
 
 import com.tbg.myexpenses.data.ExpensesDbHelper;
-import com.tbg.myexpenses.data.ExpensesItem;
-import com.tbg.myexpenses.data.ItemsContainer;
 import com.tbg.myexpenses.fragments.ExpenseEditFragment;
+import com.tbg.myexpenses.fragments.ExpensesExpandableListViewFragment;
 import com.tbg.myexpenses.fragments.ExpensesListViewFragment;
 
 public class MainActivity extends AppCompatActivity implements
-    ExpensesListViewFragment.OnExpenseItemSelectedListener, ExpenseEditFragment.OnExpenseEditListener{
+    ExpensesListViewFragment.OnExpenseItemSelectedListener, ExpenseEditFragment.OnExpenseEditListener,
+        NavigationView.OnNavigationItemSelectedListener{
 
-    private ExpensesListViewFragment firstFragment;
+    public static String TagExpensesListFragment = "TagExpensesList";
+    public static String TagExpensesEditFragment = "TagExpensesEdit";
+
+    private ExpensesExpandableListViewFragment firstFragment;
     private FloatingActionButton fab;
     private ExpensesDbHelper dbHelper;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +38,17 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        // Navigation Drawer
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,
+                drawer, toolbar, R.string.open_navigation_drawer, R.string.close_navigation_drawer);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView)findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
         // connect to database
         dbHelper = ExpensesDbHelper.getInstance(this);
         dbHelper.getReadableDatabase();
@@ -45,28 +64,7 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
-        // Check that the activity is using the layout version with
-        // the fragment_container FrameLayout
-        if (findViewById(R.id.fragment_container) != null) {
-
-            // However, if we're being restored from a previous state,
-            // then we don't need to do anything and should return or else
-            // we could end up with overlapping fragments.
-            if (savedInstanceState != null) {
-                return;
-            }
-
-            // Create a new Fragment to be placed in the activity layout
-            firstFragment = new ExpensesListViewFragment();
-
-            // In case this activity was started with special instructions from an
-            // Intent, pass the Intent's extras to the fragment as arguments
-            firstFragment.setArguments(getIntent().getExtras());
-
-            // Add the fragment to the 'fragment_container' FrameLayout
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, firstFragment).commit();
-        }
+        onExpenseEdited();
     }
 
 
@@ -128,41 +126,84 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+
         if(!fab.isShown()){
             fab.show();
         }
-        // check if item was edited, in case of emtpy item - remove it from array
-//        if(wasntEdited(ItemsContainer.expensesItems.get(0))){
-//            ItemsContainer.expensesItems.remove(0);
-//            firstFragment.notifyAdapter();
-//        }
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if(drawer.isDrawerOpen(GravityCompat.START)){
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 
-//    private boolean wasntEdited(ExpensesItem expensesItem) {
-//        if(expensesItem != null){
-//            return false;
-//        }
-//        return(expensesItem.getExplanation().length() <=0 && expensesItem.getAmount() <=0);
-//    }
 
     @Override
+    /**
+     * Called when application started or item in Expense fragment was modified
+     */
     public void onExpenseEdited() {
-        ExpensesListViewFragment newFragment = new ExpensesListViewFragment();
+        Bundle savedInstanceState = getIntent().getExtras();
+        // Check that the activity is using the layout version with
+        // the fragment_container FrameLayout
+//        if (findViewById(R.id.fragment_container) != null) {
+//
+//            // However, if we're being restored from a previous state,
+//            // then we don't need to do anything and should return or else
+//            // we could end up with overlapping fragments.
+//            if (savedInstanceState != null) {
+//                return;
+//            }
+//
+//            // Create a new Fragment to be placed in the activity layout
+//            firstFragment = new ExpensesListViewFragment();
+//
+//            // In case this activity was started with special instructions from an
+//            // Intent, pass the Intent's extras to the fragment as arguments
+//            firstFragment.setArguments(getIntent().getExtras());
+//
+//            // Add the fragment to the 'fragment_container' FrameLayout
+//            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+//            if(getSupportFragmentManager().findFragmentById(R.id.fragment_container) != null) {
+//                ft.replace(R.id.fragment_container, firstFragment, TagExpensesListFragment);
+//            } else {
+//                ft.add(R.id.fragment_container, firstFragment, TagExpensesListFragment);
+//            }
+//            ft.commit();
+//        }
+        if (findViewById(R.id.fragment_container) != null) {
 
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            // However, if we're being restored from a previous state,
+            // then we don't need to do anything and should return or else
+            // we could end up with overlapping fragments.
+            if (savedInstanceState != null) {
+                return;
+            }
 
-        // Replace whatever is in the fragment_container view with this fragment,
-        // and add the transaction to the back stack so the user can navigate back
-        transaction.replace(R.id.fragment_container, newFragment);
+            // Create a new Fragment to be placed in the activity layout
+            firstFragment = new ExpensesExpandableListViewFragment();
 
-//        transaction.addToBackStack(null);
+            // In case this activity was started with special instructions from an
+            // Intent, pass the Intent's extras to the fragment as arguments
+            firstFragment.setArguments(getIntent().getExtras());
 
-        // commit the transaction
-        transaction.commit();
+            // Add the fragment to the 'fragment_container' FrameLayout
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            if(getSupportFragmentManager().findFragmentById(R.id.fragment_container) != null) {
+                ft.replace(R.id.fragment_container, firstFragment, TagExpensesListFragment);
+            } else {
+                ft.add(R.id.fragment_container, firstFragment, TagExpensesListFragment);
+            }
+            ft.commit();
+        }
+
         if(!fab.isShown()){
             fab.show();
         }
+
+        // hide soft keyboard
+        hideSoftKeyboard();
     }
 
     @Override
@@ -171,5 +212,25 @@ public class MainActivity extends AppCompatActivity implements
         if(dbHelper!= null){
             dbHelper.close();
         }
+    }
+
+    public void hideSoftKeyboard() {
+        View focus = getCurrentFocus();
+        if(focus != null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) this.getSystemService(Activity.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), 0);
+        }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if(id == R.id.nav_group_month){
+            System.out.println();
+        }
+
+        DrawerLayout drawer = (DrawerLayout)findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 }

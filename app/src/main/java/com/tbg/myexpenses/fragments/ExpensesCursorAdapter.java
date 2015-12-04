@@ -23,12 +23,13 @@ import java.util.Date;
 public class ExpensesCursorAdapter extends CursorAdapter {
 
     SimpleDateFormat simpleDateFormat;
-    private String[] category;
     String dateFormat;
+//    private String[] category;
+
 
     public ExpensesCursorAdapter(Context context, Cursor c, boolean autoRequery) {
         super(context, c, autoRequery);
-        category = context.getResources().getStringArray(R.array.categories);
+//        category = context.getResources().getStringArray(R.array.categories);
         dateFormat = "yyyy-MM-dd HH:mm";
         simpleDateFormat = new SimpleDateFormat(dateFormat);
     }
@@ -41,7 +42,7 @@ public class ExpensesCursorAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        final int id = cursor.getInt(cursor.getColumnIndex(ExpensesDbHelper.ID));
+//        final int id = cursor.getInt(cursor.getColumnIndex(ExpensesDbHelper.ID));
         final String title = cursor.getString(cursor.getColumnIndex(ExpensesDbHelper.TITLE_VALUE));
         final double amount = cursor.getDouble(cursor.getColumnIndex(ExpensesDbHelper.AMOUNT_VALUE));
         final String description = cursor.getString(cursor.getColumnIndex(ExpensesDbHelper.DESCRIPTION_VALUE));

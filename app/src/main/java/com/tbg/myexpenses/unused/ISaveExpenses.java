@@ -1,4 +1,4 @@
-package com.tbg.myexpenses;
+package com.tbg.myexpenses.unused;
 
 import com.tbg.myexpenses.data.ExpensesItem;
 

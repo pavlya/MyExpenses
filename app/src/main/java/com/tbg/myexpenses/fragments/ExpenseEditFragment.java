@@ -6,11 +6,14 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
+import com.tbg.myexpenses.Utility;
 import com.tbg.myexpenses.data.ExpensesDbHelper;
 import com.tbg.myexpenses.data.ExpensesItem;
 import com.tbg.myexpenses.R;
@@ -21,6 +24,7 @@ public class ExpenseEditFragment extends Fragment implements View.OnClickListene
     private EditText etTitle;
     private EditText etExplanation;
     private Spinner spinnerCategory;
+    private Activity parentActivity;
 
     @Override
     public void onClick(View v) {
@@ -30,6 +34,8 @@ public class ExpenseEditFragment extends Fragment implements View.OnClickListene
                 return;
             case R.id.btn_submit:
                 saveValuesAndCloseActivity();
+                return;
+            default:
                 return;
         }
     }
@@ -92,25 +98,30 @@ public class ExpenseEditFragment extends Fragment implements View.OnClickListene
 
     private void saveValuesAndCloseActivity() {
         ExpensesItem item = new ExpensesItem();
-        item.setAmount(Double.parseDouble(etAmount.getText().toString()));
-        item.setTitle(etTitle.getText().toString());
-        item.setExplanation(etExplanation.getText().toString());
-        item.setcategory(spinnerCategory.getSelectedItemPosition());
-        item.setDate(System.currentTimeMillis());
+        if(!etAmount.getText().toString().isEmpty()){
+            item.setAmount(Double.parseDouble(etAmount.getText().toString()));
+            item.setTitle(etTitle.getText().toString());
+            item.setExplanation(etExplanation.getText().toString());
+            item.setcategory(spinnerCategory.getSelectedItemPosition());
+            item.setDate(System.currentTimeMillis());
 
-        if(mCurrentId != -1) {
-            ExpensesDbHelper.getInstance(getContext()).updateExpenseItem(item, mCurrentId);
+            if(mCurrentId != -1) {
+                ExpensesDbHelper.getInstance(getContext()).updateExpenseItem(item, mCurrentId);
+            }
+            else {
+                ExpensesDbHelper.getInstance(getContext()).addExpenseItem(item);
+            }
+            expenseEditListener.onExpenseEdited();
+        } else {
+            Toast.makeText(getContext(), "Amount can't be empty", Toast.LENGTH_SHORT).show();
         }
-        else {
-            ExpensesDbHelper.getInstance(getContext()).addExpenseItem(item);
-        }
-        expenseEditListener.onExpenseEdited();
+
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-
+        parentActivity = activity;
         try {
             expenseEditListener = (OnExpenseEditListener)activity;
         } catch (ClassCastException e){

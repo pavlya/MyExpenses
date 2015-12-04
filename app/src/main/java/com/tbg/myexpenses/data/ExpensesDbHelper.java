@@ -1,5 +1,6 @@
 package com.tbg.myexpenses.data;
 
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -25,6 +26,14 @@ public class ExpensesDbHelper extends SQLiteOpenHelper{
     public static final String DATE_VALUE = "date";
     public static final String ID = "_id";
 
+    public static final String TABLE_CATEGORIES = "categories_table";
+    public static final String CATEGORY_NAME = "category_name";
+
+
+    public static final long DAY_VALUE = 24 * 60 * 60 * 1000;
+    public static final long WEEK_VALUE = DAY_VALUE * 7;
+    public static final long MONTH_VALUE = DAY_VALUE * 31;
+
 
     private static ExpensesDbHelper instance = null;
 
@@ -41,12 +50,28 @@ public class ExpensesDbHelper extends SQLiteOpenHelper{
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createDbString = "CREATE TABLE " + TABLE_EXPENSES + "(" + ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+        ContentValues contentValues = new ContentValues();
+        String createCategoryDB = "CREATE TABLE " + TABLE_CATEGORIES + "(" + ID +
+                " INTEGER PRIMARY KEY, " + CATEGORY_NAME + " TEXT);";
+        db.execSQL(createCategoryDB);
+        String [] categories = new String[] {"General", "Food", "Vacation", "Electronics"};
+        for(int i = 0; i <categories.length; i++){
+            contentValues.put(ID, i);
+            contentValues.put(CATEGORY_NAME, categories[i]);
+
+            db.insert(TABLE_CATEGORIES, null,contentValues);
+        }
+
+        String createDbString = "CREATE TABLE " + TABLE_EXPENSES + "(" + ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 AMOUNT_VALUE + " DOUBLE NOT NULL, " + TITLE_VALUE + " TEXT, " +
                 "" + DESCRIPTION_VALUE + " TEXT, " +
                 "" + DATE_VALUE + " DOUBLE NOT NULL, " +
                 CATEGORY_VALUE + " INTEGER);";
         db.execSQL(createDbString);
+    }
+
+    public Cursor getCategoryData(){
+        return  getReadableDatabase().query(TABLE_CATEGORIES, null, null, null, null, null, null);
     }
 
     @Override
@@ -73,7 +98,7 @@ public class ExpensesDbHelper extends SQLiteOpenHelper{
         contentValues.put(CATEGORY_VALUE, item.getCategory());
         String whereClause = ID + " = ?";
         String [] whereArgs = {"" + id};
-        getWritableDatabase().update(TABLE_EXPENSES, contentValues,whereClause, whereArgs);
+        getWritableDatabase().update(TABLE_EXPENSES, contentValues, whereClause, whereArgs);
     }
 
     public void deleteExpenseItem(long id){
@@ -102,7 +127,7 @@ public class ExpensesDbHelper extends SQLiteOpenHelper{
         return expensesItem;
     }
 
-    public List<ExpensesItem> getExpenseItem(){
+    public List<ExpensesItem> getExpensesItem(){
         List<ExpensesItem> expensesItemList = new ArrayList<>();
         // Select all query
         String selectQuery = "SELECT * FROM " + TABLE_EXPENSES;
@@ -123,6 +148,54 @@ public class ExpensesDbHelper extends SQLiteOpenHelper{
 
     public Cursor getAllItemsCursor(){
         Cursor cursor = getReadableDatabase().rawQuery("SELECT * FROM " + TABLE_EXPENSES, null);
+        return cursor;
+    }
+
+    public Cursor getExpensesBeforeSpecifiedDate(long specifiedDate){
+        // TODO implement cursor
+        long currentTime = System.currentTimeMillis();
+        long timeToLook = currentTime - specifiedDate;
+        Cursor cursor = getReadableDatabase().rawQuery(
+                "SELECT * FROM " + TABLE_EXPENSES + " WHERE " + DATE_VALUE + " >= " +timeToLook, null);
+        return cursor;
+    }
+
+    public Cursor getTodayExpenses (){
+        return getExpensesBeforeSpecifiedDate(DAY_VALUE);
+    }
+
+    public Cursor getLastWeekExpenses(){
+        return getExpensesBeforeSpecifiedDate(WEEK_VALUE);
+    }
+
+    public Cursor getLastMontExpenses(){
+        return getExpensesBeforeSpecifiedDate(MONTH_VALUE);
+    }
+
+    public Cursor getCursorByCategory(int category){
+        Cursor cursor = getReadableDatabase().rawQuery(
+                "SELECT * FROM " + TABLE_EXPENSES + " WHERE " + CATEGORY_VALUE + " = " +category, null);
+        return cursor;
+    }
+
+    public Cursor getGroupedByCategory(){
+//        Cursor cursor = getReadableDatabase().rawQuery("SELECT * FROM " + TABLE_EXPENSES
+//                + " GROUP BY " + CATEGORY_VALUE, null);
+        // Selecting distinct
+        Cursor cursor = getReadableDatabase().query(true, TABLE_EXPENSES,
+                null, null, null, CATEGORY_VALUE, null,null,null);
+
+        return cursor;
+    }
+
+    public void clearDb(){
+        getWritableDatabase().delete(TABLE_EXPENSES, null, null);
+    }
+
+    public Cursor getAmountByCategory(int category){
+        Cursor cursor = getReadableDatabase().rawQuery("SELECT sum(amount) from " + TABLE_EXPENSES + " WHERE "
+                + CATEGORY_VALUE + "=" + category, null);
+//        Cursor cursor = getReadableDatabase().rawQuery("SELECT sum(amount) from " + TABLE_EXPENSES, null);
         return cursor;
     }
 }

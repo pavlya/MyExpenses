@@ -2,7 +2,7 @@
     <string name="app_name">MyExpenses</string>
     <string name="action_settings">Settings</string>
 
-<!-- TODO: Remove or change this placeholder text -->
+    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="submit">Submit</string>
     <string name="delete">Delete</string>
@@ -10,4 +10,7 @@
 
     <string name="fa_icon_shopping_cart">&#xf07a;</string>
     <string name="fa_icon_heart">&#xf004;</string>
+    <string name="expenses_calc">Expenses Calc</string>
+    <string name="open_navigation_drawer">Open navigation drawer</string>
+    <string name="close_navigation_drawer">Close navigation drawer</string>
 </resources>
