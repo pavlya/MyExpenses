@@ -183,7 +183,7 @@ public class ExpensesDbHelper extends SQLiteOpenHelper{
 //                + " GROUP BY " + CATEGORY_VALUE, null);
         // Selecting distinct
         Cursor cursor = getReadableDatabase().query(true, TABLE_EXPENSES,
-                null, null, null, CATEGORY_VALUE, null,null,null);
+                null, null, null, CATEGORY_VALUE, null, null, null);
 
         return cursor;
     }
@@ -197,5 +197,17 @@ public class ExpensesDbHelper extends SQLiteOpenHelper{
                 + CATEGORY_VALUE + "=" + category, null);
 //        Cursor cursor = getReadableDatabase().rawQuery("SELECT sum(amount) from " + TABLE_EXPENSES, null);
         return cursor;
+    }
+
+    public double getTotalAmount(){
+        Cursor cursor = getReadableDatabase().rawQuery("SELECT sum(amount) from " + TABLE_EXPENSES, null);
+        double amount = 0;
+        if(cursor.moveToFirst()){
+            amount = cursor.getDouble(0);
+        }
+        if(cursor!=null && !cursor.isClosed()){
+            cursor.close();
+        }
+        return amount;
     }
 }

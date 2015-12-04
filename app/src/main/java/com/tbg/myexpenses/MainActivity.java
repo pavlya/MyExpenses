@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import com.tbg.myexpenses.data.ExpensesDbHelper;
 import com.tbg.myexpenses.fragments.ExpenseEditFragment;
@@ -84,6 +86,12 @@ public class MainActivity extends AppCompatActivity implements
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        }
+        if (id == R.id.action_get_total) {
+            double amount = ExpensesDbHelper.getInstance(getApplication()).getTotalAmount();
+            String totalAmount = "Total amount spent: " + amount;
+            Toast.makeText(getApplicationContext(), totalAmount, Toast.LENGTH_LONG).show();
             return true;
         }
 

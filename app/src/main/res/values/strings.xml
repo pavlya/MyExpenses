@@ -13,4 +13,5 @@
     <string name="expenses_calc">Expenses Calc</string>
     <string name="open_navigation_drawer">Open navigation drawer</string>
     <string name="close_navigation_drawer">Close navigation drawer</string>
+    <string name="get_total_amount">Get total amount</string>
 </resources>

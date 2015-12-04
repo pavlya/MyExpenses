@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/action_get_total" android:title="@string/get_total_amount"
+        android:orderInCategory="100" app:showAsAction="always" />
     <item android:id="@+id/action_add" android:title="@string/add"
         android:orderInCategory="100" app:showAsAction="never" />
 </menu>
