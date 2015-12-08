@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 
 import com.tbg.myexpenses.R;
+import com.tbg.myexpenses.adapters.ExpensesCursorTreeAdapter;
 import com.tbg.myexpenses.data.ExpensesDbHelper;
 
 /**

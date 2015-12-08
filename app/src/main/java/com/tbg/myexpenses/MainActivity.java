@@ -4,32 +4,33 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.tbg.myexpenses.data.ExpensesDbHelper;
 import com.tbg.myexpenses.fragments.ExpenseEditFragment;
 import com.tbg.myexpenses.fragments.ExpensesExpandableListViewFragment;
+import com.tbg.myexpenses.fragments.ExpensesGroupedByDateFragment;
 import com.tbg.myexpenses.fragments.ExpensesListViewFragment;
 
 public class MainActivity extends AppCompatActivity implements
     ExpensesListViewFragment.OnExpenseItemSelectedListener, ExpenseEditFragment.OnExpenseEditListener,
-        NavigationView.OnNavigationItemSelectedListener{
+        NavigationView.OnNavigationItemSelectedListener, ExpensesGroupedByDateFragment.OnExpensesGroupedFragmentInteractionListener {
 
     public static String TagExpensesListFragment = "TagExpensesList";
     public static String TagExpensesEditFragment = "TagExpensesEdit";
 
     private ExpensesExpandableListViewFragment firstFragment;
+    private ExpensesGroupedByDateFragment groupedByDateFragment;
     private FloatingActionButton fab;
     private ExpensesDbHelper dbHelper;
 
@@ -59,14 +60,11 @@ public class MainActivity extends AppCompatActivity implements
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-                // Add item to array and start Editing
                 onExpenseItemSelected(-1);
             }
         });
 
-        onExpenseEdited();
+        init();
     }
 
 
@@ -92,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements
             double amount = ExpensesDbHelper.getInstance(getApplication()).getTotalAmount();
             String totalAmount = "Total amount spent: " + amount;
             Toast.makeText(getApplicationContext(), totalAmount, Toast.LENGTH_LONG).show();
+            String[] stringArray = getResources().getStringArray(R.array.categories);
             return true;
         }
 
@@ -107,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements
             // if edit fragment is available, we're in two pane layout...
 
             // Call a method in the Edit fragment to update its content
-            editFragment.updateEditView(id);
+            editFragment.updateOrInitEditView(id);
         } else {
             // If the fragment is not available, we're in the one-pane layout and must swap frags..
 
@@ -146,12 +145,53 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    private void init() {
+        onExpenseEdited();
+    }
 
-    @Override
+
     /**
      * Called when application started or item in Expense fragment was modified
      */
     public void onExpenseEdited() {
+        Bundle savedInstanceState = getIntent().getExtras();
+
+        if (findViewById(R.id.fragment_container) != null) {
+
+            // However, if we're being restored from a previous state,
+            // then we don't need to do anything and should return or else
+            // we could end up with overlapping fragments.
+            if (savedInstanceState != null) {
+                return;
+            }
+
+            // Create a new Fragment to be placed in the activity layout
+            groupedByDateFragment = new ExpensesGroupedByDateFragment();
+
+            // In case this activity was started with special instructions from an
+            // Intent, pass the Intent's extras to the fragment as arguments
+            groupedByDateFragment.setArguments(getIntent().getExtras());
+
+            // Add the fragment to the 'fragment_container' FrameLayout
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            if(getSupportFragmentManager().findFragmentById(R.id.fragment_container) != null) {
+                ft.replace(R.id.fragment_container, groupedByDateFragment, TagExpensesListFragment);
+            } else {
+                ft.add(R.id.fragment_container, groupedByDateFragment, TagExpensesListFragment);
+            }
+            ft.commit();
+        }
+
+        if(!fab.isShown()){
+            fab.show();
+        }
+
+        // hide soft keyboard
+        hideSoftKeyboard();
+    }
+
+
+    public void onExpenseEditedOld() {
         Bundle savedInstanceState = getIntent().getExtras();
         // Check that the activity is using the layout version with
         // the fragment_container FrameLayout
@@ -198,7 +238,7 @@ public class MainActivity extends AppCompatActivity implements
 
             // Add the fragment to the 'fragment_container' FrameLayout
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            if(getSupportFragmentManager().findFragmentById(R.id.fragment_container) != null) {
+            if (getSupportFragmentManager().findFragmentById(R.id.fragment_container) != null) {
                 ft.replace(R.id.fragment_container, firstFragment, TagExpensesListFragment);
             } else {
                 ft.add(R.id.fragment_container, firstFragment, TagExpensesListFragment);
@@ -206,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements
             ft.commit();
         }
 
-        if(!fab.isShown()){
+        if (!fab.isShown()) {
             fab.show();
         }
 
@@ -240,5 +280,10 @@ public class MainActivity extends AppCompatActivity implements
         DrawerLayout drawer = (DrawerLayout)findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onExpensesGroupSelected() {
+
     }
 }

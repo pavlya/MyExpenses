@@ -4,26 +4,20 @@ import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
-import android.support.v4.widget.CursorAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.tbg.myexpenses.data.ExpensesDbHelper;
-import com.tbg.myexpenses.data.ExpensesItem;
 import com.tbg.myexpenses.R;
-import com.tbg.myexpenses.data.ItemsContainer;
+import com.tbg.myexpenses.adapters.ExpensesCursorAdapter;
+import com.tbg.myexpenses.data.ExpensesDbHelper;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class ExpensesListViewFragment extends ListFragment {
-
-    public interface OnExpenseItemSelectedListener {
-        public void onExpenseItemSelected(long id);
-    }
 
     private OnExpenseItemSelectedListener itemSelectListener;
     private Cursor cursor;
@@ -37,13 +31,9 @@ public class ExpensesListViewFragment extends ListFragment {
 
 //        expensesArrayAdapterAdapter = new ExpensesArrayAdapter(getContext(), ItemsContainer.expensesItems);
         cursor = ExpensesDbHelper.getInstance(getContext()).getAllItemsCursor();
-        expensesCursorAdapter = new ExpensesCursorAdapter(getContext(),cursor ,true);
+        expensesCursorAdapter = new ExpensesCursorAdapter(getContext(), cursor, true);
         setListAdapter(expensesCursorAdapter);
         return inflater.inflate(R.layout.fragment_expenses_list, container, false);
-    }
-
-    public static boolean checkNullOrEmptyString(String string){
-        return (string == null || string.length() <= 0);
     }
 
     @Override
@@ -51,12 +41,12 @@ public class ExpensesListViewFragment extends ListFragment {
         super.onStart();
 
         // (We do this during onStart because at the point the listview is available)
-        if(getFragmentManager().findFragmentById(R.id.fragment_container) != null){
+        if (getFragmentManager().findFragmentById(R.id.fragment_container) != null) {
             getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         }
     }
 
-    public void notifyAdapter(){
+    public void notifyAdapter() {
         expensesCursorAdapter.notifyDataSetChanged();
     }
 
@@ -65,8 +55,8 @@ public class ExpensesListViewFragment extends ListFragment {
         super.onAttach(activity);
 
         try {
-            itemSelectListener = (OnExpenseItemSelectedListener)activity;
-        } catch (ClassCastException e){
+            itemSelectListener = (OnExpenseItemSelectedListener) activity;
+        } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnExpenseItemSelectedListener");
         }
@@ -81,5 +71,9 @@ public class ExpensesListViewFragment extends ListFragment {
 
         // Set the item as checked to be highlighted when in two-pane layout
         getListView().setItemChecked(position, true);
+    }
+
+    public interface OnExpenseItemSelectedListener {
+        void onExpenseItemSelected(long id);
     }
 }

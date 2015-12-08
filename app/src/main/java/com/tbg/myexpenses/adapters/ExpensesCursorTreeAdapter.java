@@ -1,4 +1,4 @@
-package com.tbg.myexpenses.fragments;
+package com.tbg.myexpenses.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -8,11 +8,10 @@ import android.widget.ResourceCursorTreeAdapter;
 import android.widget.TextView;
 
 import com.tbg.myexpenses.R;
+import com.tbg.myexpenses.Utility;
 import com.tbg.myexpenses.data.ExpensesDbHelper;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Created by Pavlya on 30/11/2015.
@@ -87,9 +86,6 @@ public class ExpensesCursorTreeAdapter extends ResourceCursorTreeAdapter {
 
         final TextView tvDate = (TextView)view.findViewById(R.id.tv_date);
         // set date value
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(dateValue);
-        Date date = calendar.getTime();
-        tvDate.setText(String.valueOf(simpleDateFormat.format(date)));
+        tvDate.setText(Utility.getDateText(dateValue));
     }
 }
