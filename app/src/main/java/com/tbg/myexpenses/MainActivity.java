@@ -17,6 +17,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.tbg.myexpenses.data.ExpensesDbHelper;
+import com.tbg.myexpenses.data.ExpensesItem;
 import com.tbg.myexpenses.fragments.ExpenseEditFragment;
 import com.tbg.myexpenses.fragments.ExpensesExpandableListViewFragment;
 import com.tbg.myexpenses.fragments.ExpensesGroupedByDateFragment;
@@ -146,7 +147,10 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void init() {
+        // TODO remove resetDb method
+        resetDb();
         onExpenseEdited();
+
     }
 
 
@@ -285,5 +289,26 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onExpensesGroupSelected() {
 
+    }
+
+    private void resetDb() {
+        ExpensesDbHelper.getInstance(this).clearDb();
+        // TODO use date values instead of long
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(120, 1449402321000l, "first title of 0 category", "SomeText of 0 category", 0));
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(120, 1449398721000l, "second title of 0 category", "SomeText of 0 category", 0));
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(121, 1449312321000l, "title2", "SomeText1", 1));
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(122, 1449279921000l, "title3", "SomeText2", 2));
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(122, 1449279921000l, "title3", "SomeText2", 2));
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(122, 1446515121000l, "title3", "SomeText2", 2));
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(123, 1446515121000l, "title4", "SomeText3", 3));
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(123, 1446515121000l, "title4", "SomeText3", 3));
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(120, 1449402321000l, "first title of 0 category", "SomeText of 0 category", 0));
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(120, 1449398721000l, "second title of 0 category", "SomeText of 0 category", 0));
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(121, 1449312321000l, "title2", "SomeText1", 1));
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(122, 1449279921000l, "title3", "SomeText2", 2));
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(122, 1449279921000l, "title3", "SomeText2", 2));
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(122, 1446515121000l, "title3", "SomeText2", 2));
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(123, 1446515121000l, "title4", "SomeText3", 3));
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(123, 1446515121000l, "title4", "SomeText3", 3));
     }
 }

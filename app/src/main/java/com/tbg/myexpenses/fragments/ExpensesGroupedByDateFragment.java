@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.tbg.myexpenses.R;
+import com.tbg.myexpenses.adapters.ExpensesGroupedByDateAdapter;
+import com.tbg.myexpenses.data.ExpensesDbHelper;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -32,6 +34,7 @@ public class ExpensesGroupedByDateFragment extends ListFragment {
     private String mParam2;
 
     private Cursor cursor;
+    private ExpensesGroupedByDateAdapter mAdapter;
 
     private OnExpensesGroupedFragmentInteractionListener mListener;
 
@@ -68,6 +71,11 @@ public class ExpensesGroupedByDateFragment extends ListFragment {
     }
 
     @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
@@ -80,7 +88,10 @@ public class ExpensesGroupedByDateFragment extends ListFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_expense_list, container, false);
+        cursor = ExpensesDbHelper.getInstance(getContext()).getGroupedByDay();
+        mAdapter = new ExpensesGroupedByDateAdapter(getContext(), cursor, true);
+        setListAdapter(mAdapter);
+        return inflater.inflate(R.layout.fragment_expenses_list, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event

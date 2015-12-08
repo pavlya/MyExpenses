@@ -12,6 +12,23 @@ public class ExpensesItem {
     private String explanation;
     private int category;
 
+    public ExpensesItem() {
+    }
+
+    public ExpensesItem(double amount, long date, String explanation) {
+        this.amount = amount;
+        this.date = date;
+        this.explanation = explanation;
+    }
+
+    public ExpensesItem(float amount, long date, String title, String explanation, int category) {
+        this.title = title;
+        this.amount = amount;
+        this.date = date;
+        this.explanation = explanation;
+        this.category = category;
+    }
+
     public int get_id() {
         return _id;
     }
@@ -26,22 +43,6 @@ public class ExpensesItem {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-
-    public ExpensesItem(){}
-
-    public ExpensesItem(double amount, long date, String explanation) {
-        this.amount = amount;
-        this.date = date;
-        this.explanation = explanation;
-    }
-
-    public ExpensesItem(float amount, long date, String explanation, int category) {
-        this.amount = amount;
-        this.date = date;
-        this.explanation = explanation;
-        this.category = category;
     }
 
     public double getAmount() {
