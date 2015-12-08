@@ -23,6 +23,7 @@ public class ExpensesGroupedByDateAdapter extends CursorAdapter {
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
+
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         return inflater.inflate(R.layout.expense_item_header, parent, false);
