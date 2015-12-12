@@ -1,32 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <item android:title="Group By: ">
-        <menu>
-            <item android:id="@+id/nav_group_general" android:title="General"
-                ></item>
-            <item android:id="@+id/nav_group_food" android:title="Food"
-                ></item>
-            <item android:id="@+id/nav_group_bills" android:title="Bills"></item>
-            <item android:id="@+id/nav_group_vacation" android:title="Vacation"></item>
-            <item android:id="@+id/nav_group_transport" android:title="Transport"></item>
-            <item android:id="@+id/nav_group_electronics" android:title="Electronics"></item>
-        </menu>
-    </item>
     <item android:title="Group By:">
         <menu>
             <item android:id="@+id/nav_group_day"
-                android:title="Day"
-                android:icon="@android:drawable/ic_menu_day"/>
+                android:icon="@android:drawable/ic_menu_day"
+                android:title="Day" />
             <item android:id="@+id/nav_group_week"
-                android:title="Week"
-                android:icon="@android:drawable/ic_menu_week"/>
+                android:icon="@android:drawable/ic_menu_week"
+                android:title="Week" />
             <item android:id="@+id/nav_group_month"
-                android:title="Month"
-                android:icon="@android:drawable/ic_menu_month"/>
-            <item android:id="@+id/nav_group_year"
-                android:title="Year"
-                android:icon="@android:drawable/ic_menu_month"></item>
+                android:icon="@android:drawable/ic_menu_month"
+                android:title="Month" />
         </menu>
     </item>
 

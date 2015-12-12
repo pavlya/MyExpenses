@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.tbg.myexpenses.MyExpensesApplication;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -207,7 +209,8 @@ public class ExpensesDbHelper extends SQLiteOpenHelper{
      * @return Cursor with values grouped by a week
      */
     public Cursor getGroupedByWeek() {
-        Cursor cursor = getReadableDatabase().rawQuery("SELECT strftime('%W', date) as valWeek," +
+        Cursor cursor = getReadableDatabase().rawQuery("SELECT _id, strftime('%W', date) as valWeek," +
+                "(strftime('%s', date) * 1000) as date_in_milli, " +
                 "SUM(amount) as valTotalWeek from " + TABLE_EXPENSES + " GROUP BY valWeek", null);
         return cursor;
     }
@@ -216,7 +219,8 @@ public class ExpensesDbHelper extends SQLiteOpenHelper{
      * @return Cursor with values grouped by a day
      */
     public Cursor getGroupedByDay() {
-        Cursor cursor = getReadableDatabase().rawQuery("SELECT _id, strftime('%j', date) as valDay," +
+        Cursor cursor = getReadableDatabase().rawQuery("SELECT _id, " +
+                "strftime('%j', date) as valDay," +
                 "(strftime('%s', date) * 1000) as date_in_milli, " +
                 "SUM(amount) as valTotalDay from " + TABLE_EXPENSES + " GROUP BY valDay", null);
         return cursor;
@@ -226,8 +230,9 @@ public class ExpensesDbHelper extends SQLiteOpenHelper{
      * @return Cursor with values grouped by a month
      */
     public Cursor getGroupedByMonth() {
-        Cursor cursor = getReadableDatabase().rawQuery("SELECT _id, strftime('%m', date) as valMonth," +
-                "(strftime('%m', date) * 1000) as date_in_milli, " +
+        Cursor cursor = getReadableDatabase().rawQuery("SELECT _id, " +
+                "strftime('%m', date) as valMonth," +
+                "(strftime('%s', date) * 1000) as date_in_milli, " +
                 "SUM(amount) as valTotalDay from " + TABLE_EXPENSES + " GROUP BY valMonth", null);
         return cursor;
     }
@@ -254,11 +259,15 @@ public class ExpensesDbHelper extends SQLiteOpenHelper{
     public Cursor getItemsByWeek(long dateValue) {
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(dateValue);
-        int dayOfTheYear = cal.get(Calendar.DAY_OF_YEAR);
+        // substract 1 to match other items
+        int weekOfYear = cal.get(Calendar.WEEK_OF_YEAR) - 1;
+        Log.d(MyExpensesApplication.LOG_TAG,
+                ExpensesDbHelper.class + ".getItemsByWeek weekOfYear: " + weekOfYear);
+        Log.d(MyExpensesApplication.LOG_TAG, "" + ExpensesDbHelper.class + "getItemsByWeek weekOfYear: " + weekOfYear);
         Cursor cursor = getReadableDatabase().rawQuery("SELECT *, strftime('%W', date) as valDay " +
                 "FROM " + TABLE_EXPENSES +
                 " where " +
-                "cast(strftime('%W', date) as valDay) = " + dayOfTheYear, null);
+                "cast(strftime('%W', date) as valDay) = " + weekOfYear, null);
         return cursor;
     }
 
@@ -269,11 +278,14 @@ public class ExpensesDbHelper extends SQLiteOpenHelper{
     public Cursor getItemsByMonth(long dateValue) {
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(dateValue);
-        int dayOfTheYear = cal.get(Calendar.DAY_OF_YEAR);
+        // substract 1 to match other items
+        int month = cal.get(Calendar.MONTH) + 1;
+        Log.d(MyExpensesApplication.LOG_TAG,
+                ExpensesDbHelper.class + ".getItemsByMonth month: " + month);
         Cursor cursor = getReadableDatabase().rawQuery("SELECT *, strftime('%m', date) as valDay " +
                 "FROM " + TABLE_EXPENSES +
                 " where " +
-                "cast(strftime('%m', date) as valDay) = " + dayOfTheYear, null);
+                "cast(strftime('%m', date) as valDay) = " + month, null);
         return cursor;
     }
 

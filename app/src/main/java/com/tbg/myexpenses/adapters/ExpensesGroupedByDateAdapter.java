@@ -9,18 +9,23 @@ import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import com.tbg.myexpenses.R;
+import com.tbg.myexpenses.Utility;
 
-import java.util.Date;
+import java.text.SimpleDateFormat;
 
 /**
  * Created by Pavlya on 08/12/2015.
  */
 public class ExpensesGroupedByDateAdapter extends CursorAdapter {
     LayoutInflater inflater;
+    SimpleDateFormat simpleDateFormat;
+    String dateFormat;
 
     public ExpensesGroupedByDateAdapter(Context context, Cursor c, boolean autoRequery) {
         super(context, c, autoRequery);
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        dateFormat = "yyyy-MM-dd";
+        simpleDateFormat = new SimpleDateFormat(dateFormat);
     }
 
 
@@ -33,9 +38,12 @@ public class ExpensesGroupedByDateAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         TextView tvAmount = (TextView) view.findViewById(R.id.tv_header_amount);
         TextView tvCategory = (TextView) view.findViewById(R.id.tv_header_category);
+        TextView tvDateNum = (TextView) view.findViewById(R.id.tv_date_num);
 
         // TODO: 08/12/2015 change number values to contstants with text representation
         tvAmount.setText(cursor.getString(3));
-        tvCategory.setText(new Date(cursor.getLong(2)).toString());
+        tvDateNum.setText(cursor.getString(1));
+//        tvCategory.setText(Utility.getDateText(2));
+        tvCategory.setText(Utility.getDateText(cursor.getLong(2)));
     }
 }

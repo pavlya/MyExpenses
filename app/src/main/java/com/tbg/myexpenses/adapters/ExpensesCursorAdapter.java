@@ -45,7 +45,10 @@ public class ExpensesCursorAdapter extends CursorAdapter {
         final String title = cursor.getString(cursor.getColumnIndex(ExpensesDbHelper.TITLE_VALUE));
         final double amount = cursor.getDouble(cursor.getColumnIndex(ExpensesDbHelper.AMOUNT_VALUE));
         final String description = cursor.getString(cursor.getColumnIndex(ExpensesDbHelper.DESCRIPTION_VALUE));
-        final long dateValue = cursor.getLong(cursor.getColumnIndex(ExpensesDbHelper.DATE_VALUE));
+        // TODO remove this sht
+        // convert String to long and then convert it back to string :(
+        final long dateValue = ExpensesDbHelper.getInstance(context).getDateFromString(
+                cursor.getString(cursor.getColumnIndex(ExpensesDbHelper.DATE_VALUE)));
         final int category = cursor.getInt(cursor.getColumnIndex(ExpensesDbHelper.CATEGORY_VALUE));
 
         final TextView tvCategory  = (TextView)view.findViewById(R.id.tv_category);
@@ -68,13 +71,5 @@ public class ExpensesCursorAdapter extends CursorAdapter {
         calendar.setTimeInMillis(dateValue);
         Date date = calendar.getTime();
         tvDate.setText(String.valueOf(simpleDateFormat.format(date)));
-    }
-
-    static class ExpensesViewHolder{
-        TextView tvCategory;
-        TextView tvDate;
-        TextView tvTitle;
-        TextView tvAmount;
-        TextView tvDescription;
     }
 }

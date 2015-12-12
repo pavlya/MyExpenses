@@ -1,6 +1,7 @@
 package com.tbg.myexpenses;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -29,9 +30,13 @@ public class MainActivity extends AppCompatActivity implements
 
     public static String TagExpensesListFragment = "TagExpensesList";
     public static String TagExpensesEditFragment = "TagExpensesEdit";
+    public static String TagGroupedByDateFragment = "TagGroupedByDate";
+
 
     private ExpensesExpandableListViewFragment firstFragment;
     private ExpensesGroupedByDateFragment groupedByDateFragment;
+    private ExpensesListViewFragment expensesListViewFragment;
+
     private FloatingActionButton fab;
     private ExpensesDbHelper dbHelper;
 
@@ -83,18 +88,22 @@ public class MainActivity extends AppCompatActivity implements
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        if (id == R.id.action_get_total) {
-            double amount = ExpensesDbHelper.getInstance(getApplication()).getTotalAmount();
-            String totalAmount = "Total amount spent: " + amount;
-            Toast.makeText(getApplicationContext(), totalAmount, Toast.LENGTH_LONG).show();
-            String[] stringArray = getResources().getStringArray(R.array.categories);
-            return true;
+        switch (id) {
+            case R.id.action_get_total:
+                double amount = ExpensesDbHelper.getInstance(getApplication()).getTotalAmount();
+                String totalAmount = "Total amount spent: " + amount;
+                Toast.makeText(getApplicationContext(), totalAmount, Toast.LENGTH_LONG).show();
+                String[] stringArray = getResources().getStringArray(R.array.categories);
+                break;
+            case R.id.action_delete_all:
+                resetDb();
+                break;
+            case R.id.action_add_dummy:
+                addItemsToDb();
+                break;
         }
 
+        init();
         return super.onOptionsItemSelected(item);
     }
 
@@ -148,9 +157,8 @@ public class MainActivity extends AppCompatActivity implements
 
     private void init() {
         // TODO remove resetDb method
-        resetDb();
+//        resetDb();
         onExpenseEdited();
-
     }
 
 
@@ -179,11 +187,11 @@ public class MainActivity extends AppCompatActivity implements
             // Add the fragment to the 'fragment_container' FrameLayout
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             if(getSupportFragmentManager().findFragmentById(R.id.fragment_container) != null) {
-                ft.replace(R.id.fragment_container, groupedByDateFragment, TagExpensesListFragment);
+                ft.replace(R.id.fragment_container, groupedByDateFragment, TagGroupedByDateFragment);
             } else {
-                ft.add(R.id.fragment_container, groupedByDateFragment, TagExpensesListFragment);
+                ft.add(R.id.fragment_container, groupedByDateFragment, TagGroupedByDateFragment);
             }
-            ft.commit();
+            ft.addToBackStack(TagGroupedByDateFragment).commit();
         }
 
         if(!fab.isShown()){
@@ -280,6 +288,27 @@ public class MainActivity extends AppCompatActivity implements
         if(id == R.id.nav_group_month){
             System.out.println();
         }
+        SharedPreferences sharedPreferences = getSharedPreferences(MyExpensesApplication.MY_APP_SHARED_PREFS, 0);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        switch (id) {
+            case R.id.nav_group_month:
+                editor.putString(MyExpensesApplication.SHARE_GROUPING_VALUE,
+                        MyExpensesApplication.GROUPED_BY_MONTH);
+                break;
+            case R.id.nav_group_week:
+                editor.putString(MyExpensesApplication.SHARE_GROUPING_VALUE,
+                        MyExpensesApplication.GROUPED_BY_WEEK);
+                break;
+            case R.id.nav_group_day:
+                editor.putString(MyExpensesApplication.SHARE_GROUPING_VALUE,
+                        MyExpensesApplication.GROUPED_BY_DAY);
+                break;
+            default:
+                break;
+        }
+        // initialize view according to new values
+        init();
+        editor.commit();
 
         DrawerLayout drawer = (DrawerLayout)findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -287,28 +316,79 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onExpensesGroupSelected() {
+    /**
+     * Init ExpensesListViewFragment with provided date
+     */
+    public void onExpensesGroupSelected(long date) {
+//        Bundle savedInstanceState = getIntent().getExtras();
 
+        if (findViewById(R.id.fragment_container) != null) {
+
+            // However, if we're being restored from a previous state,
+            // then we don't need to do anything and should return or else
+            // we could end up with overlapping fragments.
+//            if (savedInstanceState != null) {
+//                return;
+//            }
+
+            // Create a new Fragment to be placed in the activity layout
+            expensesListViewFragment = new ExpensesListViewFragment();
+
+            // In case this activity was started with special instructions from an
+            // Intent, pass the Intent's extras to the fragment as arguments
+//            groupedByDateFragment.setArguments(getIntent().getExtras());
+            Bundle bundle = new Bundle();
+            bundle.putLong(ExpensesListViewFragment.ARG_PARAM_DATE, date);
+            // TODO: 09/12/2015 change the "TestString value to different implementation"
+            bundle.putString(ExpensesListViewFragment.ARG_PARAM_GROUPING_TYPE, "TestString");
+            expensesListViewFragment.setArguments(bundle);
+
+
+            // Add the fragment to the 'fragment_container' FrameLayout
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            if (getSupportFragmentManager().findFragmentById(R.id.fragment_container) != null) {
+                ft.replace(R.id.fragment_container, expensesListViewFragment, TagExpensesListFragment);
+            } else {
+                ft.add(R.id.fragment_container, expensesListViewFragment, TagExpensesListFragment);
+            }
+            ft.addToBackStack(TagExpensesListFragment).commit();
+        }
+
+        if (!fab.isShown()) {
+            fab.show();
+        }
+
+        // hide soft keyboard
+        hideSoftKeyboard();
     }
 
-    private void resetDb() {
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    public void addItemsToDb() {
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(250, 1449402321000l, "Breakfast", "SomeText of 0 category", 1));
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(15, 1449380721000l, "Milk", "SomeText of 0 category", 1));
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(60, 1449312321000l, "cigarettes", "", 0));
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(100, 1449279921000l, "gas", "", 4));
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(300, 1449279921000l, "electricity", "", 2));
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(25, 1446515121000l, "vegetables", "grochery store near house", 1));
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(15, 1446515121000l, "bus", "", 4));
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(30, 1446515121000l, "battery", "Small package", 5));
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(153, 1449402321000l, "food for week", "am:pm", 1));
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(300, 1449398721000l, "jeans, shirt, and socks", "Azrieli", 0));
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(50, 1449312321000l, "lost money", "fuckin hole in my pocket", 0));
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(90, 1449279921000l, "gas", "yellow", 8));
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(60, 1449380721000l, "flowers", "mom's birthday", 7));
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(35, 1449380721000l, "balloons", "mom's birthday", 7));
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(15, 1449380721000l, "chocolate", "mom's birthday", 7));
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(250, 1446515121000l, "veterinarian", "dr. klimovich", 11));
+        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(399, 1446515121000l, "hp printer + 1 year guarantee", "", 5));
+    }
+
+    public void resetDb() {
         ExpensesDbHelper.getInstance(this).clearDb();
         // TODO use date values instead of long
-        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(120, 1449402321000l, "first title of 0 category", "SomeText of 0 category", 0));
-        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(120, 1449398721000l, "second title of 0 category", "SomeText of 0 category", 0));
-        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(121, 1449312321000l, "title2", "SomeText1", 1));
-        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(122, 1449279921000l, "title3", "SomeText2", 2));
-        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(122, 1449279921000l, "title3", "SomeText2", 2));
-        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(122, 1446515121000l, "title3", "SomeText2", 2));
-        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(123, 1446515121000l, "title4", "SomeText3", 3));
-        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(123, 1446515121000l, "title4", "SomeText3", 3));
-        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(120, 1449402321000l, "first title of 0 category", "SomeText of 0 category", 0));
-        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(120, 1449398721000l, "second title of 0 category", "SomeText of 0 category", 0));
-        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(121, 1449312321000l, "title2", "SomeText1", 1));
-        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(122, 1449279921000l, "title3", "SomeText2", 2));
-        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(122, 1449279921000l, "title3", "SomeText2", 2));
-        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(122, 1446515121000l, "title3", "SomeText2", 2));
-        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(123, 1446515121000l, "title4", "SomeText3", 3));
-        ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(123, 1446515121000l, "title4", "SomeText3", 3));
     }
 }

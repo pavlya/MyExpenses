@@ -1,8 +1,8 @@
 package com.tbg.myexpenses.fragments;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
@@ -11,9 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import com.tbg.myexpenses.MyExpensesApplication;
 import com.tbg.myexpenses.R;
 import com.tbg.myexpenses.adapters.ExpensesGroupedByDateAdapter;
 import com.tbg.myexpenses.data.ExpensesDbHelper;
+import com.tbg.myexpenses.data.ExpensesItem;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -73,6 +75,10 @@ public class ExpensesGroupedByDateFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
+        ExpensesItem item = ExpensesDbHelper.getInstance(getContext()).getItem(id);
+        long date = item.getDate();
+        mListener.onExpensesGroupSelected(date);
+
     }
 
     @Override
@@ -88,17 +94,20 @@ public class ExpensesGroupedByDateFragment extends ListFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        cursor = ExpensesDbHelper.getInstance(getContext()).getGroupedByDay();
+        SharedPreferences sharedPrefs = getActivity().
+                getSharedPreferences(MyExpensesApplication.MY_APP_SHARED_PREFS, 0);
+        String currenctGroupingValue = sharedPrefs.getString(MyExpensesApplication.SHARE_GROUPING_VALUE,
+                MyExpensesApplication.GROUPED_BY_DAY);
+        if (currenctGroupingValue.equals(MyExpensesApplication.GROUPED_BY_DAY)) {
+            cursor = ExpensesDbHelper.getInstance(getContext()).getGroupedByDay();
+        } else if (currenctGroupingValue.equals(MyExpensesApplication.GROUPED_BY_WEEK)) {
+            cursor = ExpensesDbHelper.getInstance(getContext()).getGroupedByWeek();
+        } else if (currenctGroupingValue.equals(MyExpensesApplication.GROUPED_BY_MONTH)) {
+            cursor = ExpensesDbHelper.getInstance(getContext()).getGroupedByMonth();
+        }
         mAdapter = new ExpensesGroupedByDateAdapter(getContext(), cursor, true);
         setListAdapter(mAdapter);
         return inflater.inflate(R.layout.fragment_expenses_list, container, false);
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onExpensesGroupSelected();
-        }
     }
 
     @Override
@@ -131,6 +140,6 @@ public class ExpensesGroupedByDateFragment extends ListFragment {
     public interface OnExpensesGroupedFragmentInteractionListener {
         // TODO: Update argument type and name
 //        void onFragmentInteraction(Uri uri);
-        void onExpensesGroupSelected();
+        void onExpensesGroupSelected(long date);
     }
 }

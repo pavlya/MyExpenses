@@ -7,6 +7,12 @@
         <item>Vacation</item>
         <item>Transport</item>
         <item>Electronics</item>
+        <item>Clothes</item>
+        <item>Gifts</item>
+        <item>Hobby</item>
+        <item>Make Up</item>
+        <item>Fun</item>
+        <item>Animals</item>
     </string-array>
     <string-array name="categories_icons">
         <item>&#xf07a;</item>
@@ -15,5 +21,11 @@
         <item>&#xf11b;</item>
         <item>&#xf1ba;</item>
         <item>&#xf26c;</item>
+        <item>&#xf183;</item>
+        <item>&#xf06b;</item>
+        <item>&#xf21c;</item>
+        <item>&#xf221;</item>
+        <item>&#xf1ae;</item>
+        <item>&#xf17b;</item>
     </string-array>
 </resources>
