@@ -335,5 +335,4 @@ public class ExpensesDbHelper extends SQLiteOpenHelper{
         return amount;
     }
 
-
 }

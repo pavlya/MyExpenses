@@ -5,16 +5,16 @@
         android:id="@+id/action_add_dummy"
         android:orderInCategory="100"
         android:title="@string/add_dummy"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
     <item
         android:id="@+id/action_delete_all"
         android:orderInCategory="100"
         android:title="@string/delete_all"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
     <item
         android:id="@+id/action_get_total"
         android:orderInCategory="100"
         android:title="@string/get_total_amount"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
 
 </menu>

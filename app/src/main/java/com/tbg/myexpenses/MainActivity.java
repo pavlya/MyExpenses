@@ -39,14 +39,16 @@ public class MainActivity extends AppCompatActivity implements
 
     private FloatingActionButton fab;
     private ExpensesDbHelper dbHelper;
+    private Toolbar toolbarBottom;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_top);
         setSupportActionBar(toolbar);
+        toolbarBottom = (Toolbar) findViewById(R.id.toolbar_bottom);
 
         // Navigation Drawer
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -93,7 +95,6 @@ public class MainActivity extends AppCompatActivity implements
                 double amount = ExpensesDbHelper.getInstance(getApplication()).getTotalAmount();
                 String totalAmount = "Total amount spent: " + amount;
                 Toast.makeText(getApplicationContext(), totalAmount, Toast.LENGTH_LONG).show();
-                String[] stringArray = getResources().getStringArray(R.array.categories);
                 break;
             case R.id.action_delete_all:
                 resetDb();
@@ -157,8 +158,11 @@ public class MainActivity extends AppCompatActivity implements
 
     private void init() {
         // TODO remove resetDb method
-//        resetDb();
         onExpenseEdited();
+        // update title according to saved value
+        SharedPreferences sharedPreferences = getSharedPreferences(MyExpensesApplication.MY_APP_SHARED_PREFS, 0);
+        String title = sharedPreferences.getString(MyExpensesApplication.SHARE_GROUPING_VALUE, "Ungrouped");
+        setTitle(title);
     }
 
 
@@ -200,6 +204,15 @@ public class MainActivity extends AppCompatActivity implements
 
         // hide soft keyboard
         hideSoftKeyboard();
+
+        // notify about editing values in db
+        notifyBottomBar();
+    }
+
+    private void notifyBottomBar() {
+        String totalSpent = getResources().getString(R.string.total_spent);
+        double amount = ExpensesDbHelper.getInstance(getApplication()).getTotalAmount();
+        toolbarBottom.setTitle(totalSpent + amount);
     }
 
 
@@ -307,11 +320,11 @@ public class MainActivity extends AppCompatActivity implements
                 break;
         }
         // initialize view according to new values
-        init();
         editor.commit();
 
         DrawerLayout drawer = (DrawerLayout)findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+        init();
         return true;
     }
 

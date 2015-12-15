@@ -16,4 +16,7 @@
     <string name="get_total_amount">Get total amount</string>
     <string name="add_dummy">Add dummy items</string>
     <string name="delete_all">Delete all</string>
+    <string name="unsorted">Unsorted</string>
+    <string name="total_spent">Spent: </string>
+    <string name="add_expenses">Hello, add your Expenses to start working with program.</string>
 </resources>
