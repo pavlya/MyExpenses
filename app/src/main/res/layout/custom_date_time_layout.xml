@@ -17,7 +17,9 @@
         <DatePicker
             android:id="@+id/date_picker_dialog"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"></DatePicker>
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:nestedScrollingEnabled="true"></DatePicker>
 
     </LinearLayout>
 
