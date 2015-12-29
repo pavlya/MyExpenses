@@ -141,6 +141,9 @@ public class ExpensesDbHelper extends SQLiteOpenHelper{
         expensesItem.set_id(cursor.getInt(0));
         expensesItem.setcategory(cursor.getInt(5));
         expensesItem.setTitle(cursor.getString(2));
+        if (cursor != null && !cursor.isClosed()) {
+            cursor.close();
+        }
         return expensesItem;
     }
 
