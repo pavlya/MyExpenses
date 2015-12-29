@@ -381,6 +381,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void addItemsToDb() {
+
         ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(250, 1449402321000l, "Breakfast", "SomeText of 0 category", 1));
         ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(15, 1449380721000l, "Milk", "SomeText of 0 category", 1));
         ExpensesDbHelper.getInstance(this).addExpenseItem(new ExpensesItem(60, 1449312321000l, "cigarettes", "", 0));
