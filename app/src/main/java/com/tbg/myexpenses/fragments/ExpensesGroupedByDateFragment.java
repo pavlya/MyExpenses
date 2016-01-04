@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +18,7 @@ import com.tbg.myexpenses.R;
 import com.tbg.myexpenses.adapters.ExpensesGroupedByDateAdapter;
 import com.tbg.myexpenses.data.ExpensesDbHelper;
 import com.tbg.myexpenses.data.ExpensesItem;
+import com.tbg.myexpenses.loaders.GroupedByDateLoader;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,12 +28,13 @@ import com.tbg.myexpenses.data.ExpensesItem;
  * Use the {@link ExpensesGroupedByDateFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ExpensesGroupedByDateFragment extends ListFragment {
+public class ExpensesGroupedByDateFragment extends ListFragment
+        implements LoaderManager.LoaderCallbacks<Cursor> {
+    public static final int LOADER_ID = 23;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -78,7 +82,6 @@ public class ExpensesGroupedByDateFragment extends ListFragment {
         ExpensesItem item = ExpensesDbHelper.getInstance(getContext()).getItem(id);
         long date = item.getDate();
         mListener.onExpensesGroupSelected(date);
-
     }
 
     @Override
@@ -93,20 +96,10 @@ public class ExpensesGroupedByDateFragment extends ListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        SharedPreferences sharedPrefs = getActivity().
-                getSharedPreferences(MyExpensesApplication.MY_APP_SHARED_PREFS, 0);
-        String currenctGroupingValue = sharedPrefs.getString(MyExpensesApplication.SHARE_GROUPING_VALUE,
-                MyExpensesApplication.GROUPED_BY_DAY);
-        if (currenctGroupingValue.equals(MyExpensesApplication.GROUPED_BY_DAY)) {
-            cursor = ExpensesDbHelper.getInstance(getContext()).getGroupedByDay();
-        } else if (currenctGroupingValue.equals(MyExpensesApplication.GROUPED_BY_WEEK)) {
-            cursor = ExpensesDbHelper.getInstance(getContext()).getGroupedByWeek();
-        } else if (currenctGroupingValue.equals(MyExpensesApplication.GROUPED_BY_MONTH)) {
-            cursor = ExpensesDbHelper.getInstance(getContext()).getGroupedByMonth();
-        }
-        mAdapter = new ExpensesGroupedByDateAdapter(getContext(), cursor, true);
+        mAdapter = new ExpensesGroupedByDateAdapter(getContext(), null, true);
         setListAdapter(mAdapter);
+        // init loader
+        getLoaderManager().initLoader(LOADER_ID, null, this);
         return inflater.inflate(R.layout.fragment_expenses_list, container, false);
     }
 
@@ -125,6 +118,26 @@ public class ExpensesGroupedByDateFragment extends ListFragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        // get values from shared preferences
+        SharedPreferences sharedPrefs = getActivity().
+                getSharedPreferences(MyExpensesApplication.MY_APP_SHARED_PREFS, 0);
+        String currenctGroupingValue = sharedPrefs.getString(MyExpensesApplication.SHARE_GROUPING_VALUE,
+                MyExpensesApplication.GROUPED_BY_DAY);
+        return new GroupedByDateLoader(getContext(), currenctGroupingValue);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        mAdapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
     }
 
     /**
