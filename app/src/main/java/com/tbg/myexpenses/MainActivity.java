@@ -350,6 +350,7 @@ public class MainActivity extends AppCompatActivity implements
             // In case this activity was started with special instructions from an
             // Intent, pass the Intent's extras to the fragment as arguments
 //            groupedByDateFragment.setArguments(getIntent().getExtras());
+
             Bundle bundle = new Bundle();
             bundle.putLong(ExpensesListViewFragment.ARG_PARAM_DATE, date);
             // TODO: 09/12/2015 change the "TestString value to different implementation"
