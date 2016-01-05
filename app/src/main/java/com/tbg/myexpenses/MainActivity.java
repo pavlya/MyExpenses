@@ -20,7 +20,6 @@ import android.widget.Toast;
 import com.tbg.myexpenses.data.ExpensesDbHelper;
 import com.tbg.myexpenses.data.ExpensesItem;
 import com.tbg.myexpenses.fragments.ExpenseEditFragment;
-import com.tbg.myexpenses.fragments.ExpensesExpandableListViewFragment;
 import com.tbg.myexpenses.fragments.ExpensesGroupedByDateFragment;
 import com.tbg.myexpenses.fragments.ExpensesListViewFragment;
 
@@ -33,7 +32,6 @@ public class MainActivity extends AppCompatActivity implements
     public static String TagGroupedByDateFragment = "TagGroupedByDate";
 
 
-    private ExpensesExpandableListViewFragment firstFragment;
     private ExpensesGroupedByDateFragment groupedByDateFragment;
     private ExpensesListViewFragment expensesListViewFragment;
 
@@ -213,70 +211,6 @@ public class MainActivity extends AppCompatActivity implements
         String totalSpent = getResources().getString(R.string.total_spent);
         double amount = ExpensesDbHelper.getInstance(getApplication()).getTotalAmount();
         toolbarBottom.setTitle(totalSpent + amount);
-    }
-
-
-    public void onExpenseEditedOld() {
-        Bundle savedInstanceState = getIntent().getExtras();
-        // Check that the activity is using the layout version with
-        // the fragment_container FrameLayout
-//        if (findViewById(R.id.fragment_container) != null) {
-//
-//            // However, if we're being restored from a previous state,
-//            // then we don't need to do anything and should return or else
-//            // we could end up with overlapping fragments.
-//            if (savedInstanceState != null) {
-//                return;
-//            }
-//
-//            // Create a new Fragment to be placed in the activity layout
-//            firstFragment = new ExpensesListViewFragment();
-//
-//            // In case this activity was started with special instructions from an
-//            // Intent, pass the Intent's extras to the fragment as arguments
-//            firstFragment.setArguments(getIntent().getExtras());
-//
-//            // Add the fragment to the 'fragment_container' FrameLayout
-//            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-//            if(getSupportFragmentManager().findFragmentById(R.id.fragment_container) != null) {
-//                ft.replace(R.id.fragment_container, firstFragment, TagExpensesListFragment);
-//            } else {
-//                ft.add(R.id.fragment_container, firstFragment, TagExpensesListFragment);
-//            }
-//            ft.commit();
-//        }
-        if (findViewById(R.id.fragment_container) != null) {
-
-            // However, if we're being restored from a previous state,
-            // then we don't need to do anything and should return or else
-            // we could end up with overlapping fragments.
-            if (savedInstanceState != null) {
-                return;
-            }
-
-            // Create a new Fragment to be placed in the activity layout
-            firstFragment = new ExpensesExpandableListViewFragment();
-
-            // In case this activity was started with special instructions from an
-            // Intent, pass the Intent's extras to the fragment as arguments
-            firstFragment.setArguments(getIntent().getExtras());
-
-            // Add the fragment to the 'fragment_container' FrameLayout
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            if (getSupportFragmentManager().findFragmentById(R.id.fragment_container) != null) {
-                ft.replace(R.id.fragment_container, firstFragment, TagExpensesListFragment);
-            } else {
-                ft.add(R.id.fragment_container, firstFragment, TagExpensesListFragment);
-            }
-            ft.commit();
-        }
-
-        if (!fab.isShown()) {
-            fab.show();
-        }
-
-        // hide soft keyboard
-        hideSoftKeyboard();
     }
 
     @Override
