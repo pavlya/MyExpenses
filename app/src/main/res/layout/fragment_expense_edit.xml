@@ -12,9 +12,11 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="numberDecimal"
+        android:hint="@string/amount_spent"
         />
 
     <EditText
+        android:hint="@string/add_title"
         android:id="@+id/et_title"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -22,6 +24,7 @@
         android:inputType="text" />
 
     <EditText
+        android:hint="@string/add_description"
         android:id="@+id/et_description"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"

@@ -19,4 +19,7 @@
     <string name="unsorted">Unsorted</string>
     <string name="total_spent">Spent: </string>
     <string name="add_expenses">Hello, add your Expenses to start working with program.</string>
+    <string name="amount_spent">amount of money spent</string>
+    <string name="add_title">Add title</string>
+    <string name="add_description">add description</string>
 </resources>

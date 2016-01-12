@@ -29,4 +29,9 @@ public class Utility {
     public static boolean checkNullOrEmptyString(String string) {
         return (string == null || string.length() <= 0);
     }
+
+    public static long generateLastYearsDate(){
+        long randDate = 0l;
+        return randDate;
+    }
 }
